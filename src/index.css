@@ -1,0 +1,57 @@
+@import 'tailwindcss';
+
+@theme {
+  /* Primary */
+  --color-primary-dark: oklch(0.137 0.02 228.735); /* #01080E */
+  --color-primary-mid: oklch(0.2 0.042 240.415); /* #011627 */
+  --color-primary-darker: oklch(0.184 0.039 242.308); /* #011221 */
+
+  /* Secondary */
+  --color-secondary-blue: oklch(0.57 0.06 259.2); /* #607B96 */
+  --color-secondary-green: oklch(0.68 0.13 180.2); /* #3C9D93 */
+  --color-secondary-indigo: oklch(0.62 0.17 282.2); /* #4D5BCE */
+  --color-secondary-white: oklch(1 0 0); /* #FFFFFF */
+
+  /* Accent */
+  --color-accent-orange: oklch(0.81 0.19 68.6); /* #FEA55F */
+  --color-accent-teal: oklch(0.74 0.15 191.2); /* #43D9AD */
+  --color-accent-pink: oklch(0.73 0.13 29.2); /* #E99287 */
+  --color-accent-purple: oklch(0.74 0.13 312.2); /* #C98BDF */
+
+  /* Lines */
+  --color-lines: oklch(0.292 0.031 250.771);
+
+  /* Gradients */
+  --color-gradient-indigo: oklch(0.514 0.169 273.401);
+  --color-gradient-teal: oklch(0.74 0.15 191.2);
+
+  /* Fonts Family */
+  --font-poppins: 'Poppins', sans-serif;
+  --font-fira-code: 'Fira Code', monospace;
+
+  /* Font sizes */
+  --text-headline: 62px;
+  --text-subheadline: 32px;
+  --text-body: 18px;
+  --text-label: 16px;
+  --text-code: 14px;
+
+  /* Icon sizes (width/height) */
+  --width-icon-headline: 62px;
+  --width-icon-subheadline: 32px;
+  --width-icon-body: 18px;
+  --width-icon-label: 16px;
+  --width-icon-code: 14px;
+  --width-avatar-lg: 48px;
+  --width-avatar-md: 36px;
+  --width-avatar-sd: 32px;
+
+  --height-icon-headline: 62px;
+  --height-icon-subheadline: 32px;
+  --height-icon-body: 18px;
+  --height-icon-label: 16px;
+  --height-icon-code: 14px;
+  --height-avatar-lg: 48px;
+  --height-avatar-md: 36px;
+  --height-avatar-sd: 32px;
+}
