@@ -1,7 +1,8 @@
+import { AuthLayout } from './auth/layout/AuthLayout'
 
 const App = () => {
   return (
-    <div className='text-6xl text-indigo-400'>App</div>
+    <AuthLayout />
   )
 }
 
