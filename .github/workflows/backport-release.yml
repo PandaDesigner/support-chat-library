@@ -1,0 +1,44 @@
+name: Backport Release to Develop
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  create-backport:
+    if: github.event.head_commit.message == 'Merge pull request' || startsWith(github.event.head_commit.message, 'Merge branch')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get latest merged release branch name
+        id: get_release_branch
+        run: |
+          branch=$(git log --merges -1 --pretty=format:"%P" | xargs -n1 | grep 'release/' | tail -1)
+          echo "branch=$branch" >> $GITHUB_OUTPUT
+
+      - name: Extract version from release branch
+        id: extract_version
+        run: |
+          version=$(echo "${{ steps.get_release_branch.outputs.branch }}" | sed 's|release/||')
+          echo "version=$version" >> $GITHUB_OUTPUT
+
+      - name: Create backport branch from main
+        run: |
+          git checkout main
+          git pull
+          git checkout -b backport/${{ steps.extract_version.outputs.version }}
+          git push origin backport/${{ steps.extract_version.outputs.version }}
+
+      - name: Create Pull Request to develop
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          base: develop
+          head: backport/${{ steps.extract_version.outputs.version }}
+          title: 'Backport release ${{ steps.extract_version.outputs.version }} to develop'
+          body: 'Automated backport of release ${{ steps.extract_version.outputs.version }} to develop'
