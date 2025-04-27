@@ -7,38 +7,47 @@ on:
 
 jobs:
   create-backport:
-    if: github.event.head_commit.message == 'Merge pull request' || startsWith(github.event.head_commit.message, 'Merge branch')
+    if: contains(github.event.head_commit.message, 'Merge pull request') && contains(github.event.head_commit.message, 'release/')
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout main
+      - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Get latest merged release branch name
-        id: get_release_branch
+      - name: Configure Git
         run: |
-          branch=$(git log --merges -1 --pretty=format:"%P" | xargs -n1 | grep 'release/' | tail -1)
-          echo "branch=$branch" >> $GITHUB_OUTPUT
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
 
-      - name: Extract version from release branch
-        id: extract_version
+      - name: Get release version
+        id: get_version
         run: |
-          version=$(echo "${{ steps.get_release_branch.outputs.branch }}" | sed 's|release/||')
-          echo "version=$version" >> $GITHUB_OUTPUT
+          MERGE_MSG=$(git log -1 --pretty=%B)
+          RELEASE_BRANCH=$(echo "$MERGE_MSG" | grep -o 'release/[0-9]\+\.[0-9]\+\.[0-9]\+' | head -1)
+          VERSION=$(echo $RELEASE_BRANCH | sed 's|release/||')
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Found version: $VERSION"
 
-      - name: Create backport branch from main
+      - name: Create and push backport branch
         run: |
           git checkout main
-          git pull
-          git checkout -b backport/${{ steps.extract_version.outputs.version }}
-          git push origin backport/${{ steps.extract_version.outputs.version }}
+          git pull origin main
+          git checkout -b backport/${{ steps.get_version.outputs.version }}
+          git push origin backport/${{ steps.get_version.outputs.version }}
 
-      - name: Create Pull Request to develop
+      - name: Create Pull Request
         uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           base: develop
-          head: backport/${{ steps.extract_version.outputs.version }}
-          title: 'Backport release ${{ steps.extract_version.outputs.version }} to develop'
-          body: 'Automated backport of release ${{ steps.extract_version.outputs.version }} to develop'
+          head: backport/${{ steps.get_version.outputs.version }}
+          title: 'chore: backport release ${{ steps.get_version.outputs.version }} to develop'
+          body: |
+            Automated backport of release ${{ steps.get_version.outputs.version }} to develop
+
+            This PR was automatically created to sync changes from the latest release to develop.
+          labels: |
+            automated
+            backport
