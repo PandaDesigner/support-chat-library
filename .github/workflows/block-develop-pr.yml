@@ -1,0 +1,17 @@
+name: Block PRs from develop
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+
+jobs:
+  block-develop-pr:
+    if: github.event.pull_request.head.ref == 'develop'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Close PR and comment
+        uses: peter-evans/close-pull-request@v3
+        with:
+          comment: |
+            ❌ No está permitido crear Pull Requests desde la rama `develop`.
+            Por favor, crea tus PRs desde ramas `feature/`, `release/` o `backport/` según el flujo del proyecto.
