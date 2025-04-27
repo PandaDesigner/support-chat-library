@@ -1,0 +1,22 @@
+name: Enforce Release Merge Policy
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  check-branch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check PR source branch
+        run: |
+          if [[ "${{ github.head_ref }}" != release/* ]]; then
+            echo "Error: Only release/x.y.z branches can be merged into main"
+            echo "Your branch: ${{ github.head_ref }}"
+            exit 1
+          fi
+          if [[ "${{ github.head_ref }}" == "develop" ]]; then
+            echo "Error: Direct merges from develop to main are not allowed"
+            exit 1
+          fi
